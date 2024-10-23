@@ -31,6 +31,5 @@ for i in range(number_of_join_predicats):
 ''' COSTS '''
 scan_costs = []
 
-
 print(number_of_rows_in_tables)
 print(attributes)
