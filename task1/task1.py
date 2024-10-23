@@ -33,7 +33,7 @@ for i in range(number_of_join_predicats):
     join_preds.append([int(table_num1), int(table_num2), join_table1_attr, join_table2_attr])
 
 '''CALC'''
-faster_join_preds = join_preds
+faster_join_preds = [[*sublist] for sublist in join_preds]
 for i in range(number_of_join_predicats):
     if number_of_rows_in_tables[faster_join_preds[i][0]] > number_of_rows_in_tables[faster_join_preds[i][1]]:
         temp = faster_join_preds[i][0]
@@ -48,4 +48,5 @@ scan_costs = []
 
 print(number_of_rows_in_tables[2])
 print(attributes[2])
+print(join_preds)
 print(faster_join_preds)
