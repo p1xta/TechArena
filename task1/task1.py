@@ -32,9 +32,20 @@ for i in range(number_of_join_predicats):
     table_num1, table_num2, join_table1_attr, join_table2_attr = f.readline().strip().split()
     join_preds.append([int(table_num1), int(table_num2), join_table1_attr, join_table2_attr])
 
+'''CALC'''
+faster_join_preds = join_preds
+for i in range(number_of_join_predicats):
+    if number_of_rows_in_tables[faster_join_preds[i][0]] > number_of_rows_in_tables[faster_join_preds[i][1]]:
+        temp = faster_join_preds[i][0]
+        faster_join_preds[i][0] = faster_join_preds[i][1]
+        faster_join_preds[i][1] = temp
+        temp = faster_join_preds[i][2]
+        faster_join_preds[i][2] = faster_join_preds[i][3]
+        faster_join_preds[i][3] = temp
+
 ''' COSTS '''
 scan_costs = []
 
 print(number_of_rows_in_tables[2])
 print(attributes[2])
-print(join_preds)
+print(faster_join_preds)
