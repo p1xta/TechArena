@@ -1,4 +1,5 @@
 import itertools
+import typing
 
 class Table:
     def __init__(self, num, rows, filter_attributes):
@@ -12,9 +13,21 @@ class Join:
         self.right_table = right_table
         self.left_attr = left_attr
         self.right_attr = right_attr
-
+    
     def __repr__(self):
         return f"{{{self.left_table}.{self.left_attr} {self.right_table}.{self.right_attr}}}"
+
+class ScanPred:
+    def __init__(self, table, attr):
+        self.table_num = table
+        self.attr = attr
+
+
+def find_scan_pred(scan_preds, table):
+    for pred in scan_preds:
+        if pred.table_num == table:
+            pass
+    
 
 def find_join(joins, t1, t2):
     for j in joins:
@@ -24,44 +37,39 @@ def find_join(joins, t1, t2):
 
 def build_join_trees(joins, tables):
     dp = {}
-    # Инициализируем для одиночных таблиц
     for table in tables:
         dp[(table,)] = [str(table)]
 
-    # Перебираем все размеры подмножеств
     for size in range(2, len(tables) + 1):
-        # Перебираем все подмножества данного размера
         for subset in itertools.combinations(tables, size):
-            dp[subset] = []  # Список для хранения возможных деревьев
-            # Разбиваем подмножество на две части и проверяем джоин-предикаты
+            dp[subset] = []
             for split_point in range(1, len(subset)):
-                left_sets = itertools.combinations(subset, split_point)
-                for left_set in left_sets:
-                    right_set = tuple(x for x in subset if x not in left_set)
+                right_sets = itertools.combinations(subset, split_point)
+                for right_set in right_sets:
+                    left_set = tuple(x for x in subset if x not in right_set)
 
-                left_key = tuple(sorted(left_set))
-                right_key = tuple(sorted(right_set))
-
-                if left_key in dp and right_key in dp:
-                    found_join = False;
-                    for l in left_key:
+                    left_key = tuple(left_set)
+                    right_key = tuple(right_set)
+                    print(left_key, right_key)
+                    if dp[left_key] and dp[right_key]:
+                        found_join = False
+                        for l in left_key:
                             for r in right_key:
                                 join_condition = find_join(joins, l, r)
+                                
+                                if join_condition:
+                                    found_join = True;
+                                    #(f"There is a join between {left_set} and {right_set}")
+                                    for left_tree in dp[left_key]:
+                                        for right_tree in dp[right_key]:
+                                            current_tree = f"({left_tree} {right_tree} {join_condition})"
+                                            dp[subset].append(current_tree)
 
-                    if join_condition:
-                        found_join = True;
-                        print(f"There is a join between {left_set} and {right_set}")
-                        # Для всех комбинаций деревьев из левого и правого поддерева
-                        for left_tree in dp[left_key]:
-                            for right_tree in dp[right_key]:
-                                # Строим дерево для текущего джоина
-                                current_tree = f"({left_tree} {right_tree} {join_condition})"
-                                dp[subset].append(current_tree)
-                # if not found_join:
-                #         print(f"No valid join between {left_set} and {right_set}")
-        print(f"DP State after processing subset {subset}: {dp[subset]}")
+                    # if not found_join:
+                        # print(f"No valid join between {left_set} and {right_set}")
+            #print(f"DP State after processing subset {subset}: {dp}")
 
-    return dp[tuple(sorted(tables))]
+    return dp[tuple(tables)]
 '''
 4
 3
@@ -69,7 +77,7 @@ def build_join_trees(joins, tables):
 1 3 a b
 2 4 c d
 '''
-def scan_cost():
+def scan_cost(table : Table, scan_preds):
     pass
 
 def nest_loop_inner_cost(left_table, right_table, result_rows):
@@ -94,7 +102,7 @@ tables = [x for x in range(1, number_of_tables+1)]
 #     table_num, filter_attr, card_value = input().split()
 #     attributes.append([int(table_num), filter_attr, int(card_value)])
 
-# #Условия для сканов
+#Условия для сканов
 # number_of_scan_predicats = int(input())
 # scan_preds = []
 # for i in range(number_of_scan_predicats):
