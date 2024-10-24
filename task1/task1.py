@@ -48,5 +48,7 @@ scan_costs = []
 
 print(number_of_rows_in_tables[2])
 print(attributes[2])
+
+#lol
 print(join_preds)
 print(faster_join_preds)
